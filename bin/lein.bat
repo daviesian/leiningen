@@ -39,8 +39,15 @@ if exist "%~dp0..\src\leiningen\version.clj" (
 
     if "x!LEIN_LIBS!" == "x" goto NO_DEPENDENCIES
 
-    set CLASSPATH=!LEIN_LIBS!!LEIN_ROOT!\leiningen-core\src;!LEIN_ROOT!\leiningen-core\resources;!LEIN_ROOT!\leiningen-core\test;!LEIN_ROOT!\src;!LEIN_ROOT!\resources
-
+    set LEIN_CP=
+    if not %1 == classpath (
+        set OLD_PWD=%CD%
+        cd "%~dp0.."
+        for /f "delims=" %%a in ('%~f0 classpath') do @set LEIN_CP=%%a
+        cd !OLD_PWD!
+    )
+    set CLASSPATH=!LEIN_CP!;!LEIN_LIBS!!LEIN_ROOT!\leiningen-core\src;!LEIN_ROOT!\leiningen-core\resources;!LEIN_ROOT!\leiningen-core\test;!LEIN_ROOT!\src;!LEIN_ROOT!\resources
+    
     :: Apply context specific CLASSPATH entries
     if exist "%~dp0..\.lein-classpath" (
         for /f %%i in (%~dp0...lein-classpath) do set CONTEXT_CP=%%i 
